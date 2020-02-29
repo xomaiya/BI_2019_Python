@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -34,7 +35,7 @@ def filter(read, min_length, gc_min, gc_max):
     if gc_min <= gc_content <= gc_max:
         return 'good'
     else:
-        'bad'
+        return 'bad'
 
 
 pass_path = output_path + '__passed.fastq'
@@ -43,5 +44,5 @@ with open(pass_path, 'w') as passed, open(fail_path, 'w') as failed:
     for i in range(0, len(fastq), 4):
         if filter(fastq[i + 1], args.min_length, gc_min, gc_max) is 'good':
             passed.writelines(fastq[i: i + 4])
-        else:
+        elif args.keep_filtered is not None:
             failed.writelines(fastq[i: i + 4])
