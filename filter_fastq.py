@@ -30,7 +30,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     assert args.min_length > 0, "min_length < 0. Так дела не делаются."
-    assert 1 <= len(args.gc_bounds) <= 2, 'Границ может быть либо две либо одна.'
+    assert 1 <= len(args.gc_bounds) <= 2, "Неверное количество границ"
 
     gc_min = args.gc_bounds[0]
     if len(args.gc_bounds) == 2:
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     fail_path = output_path + '__failed.fastq'
     with open(pass_path, 'w') as passed, open(fail_path, 'w') as failed:
         for i in range(0, len(fastq), 4):
-            if filter(fastq[i + 1], args.min_length, gc_min, gc_max) is 'good':
+            if filter(fastq[i + 1], args.min_length, gc_min, gc_max) == 'good':
                 passed.writelines(fastq[i: i + 4])
             elif args.keep_filtered is not None:
                 failed.writelines(fastq[i: i + 4])
