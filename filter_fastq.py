@@ -58,6 +58,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
+    parser.add_argument('fastq', type=str)
+
     filter_parser = subparsers.add_parser('filter')
     filter_parser.add_argument('--min_length', type=int, required=True)
     filter_parser.add_argument('--keep_filtered', action="store_true")
@@ -66,15 +68,23 @@ if __name__ == '__main__':
     filter_parser.add_argument('fastq', type=str)
 
     trimmomatic_parser = subparsers.add_parser('trimmomatic')
-    trimmomatic_parser.add_argument('SLIDINGWINDOW', action='store_true')
-    trimmomatic_parser.add_argument('LEADING', action='store_true')
-    trimmomatic_parser.add_argument('TRAILING', action='store_true')
-    trimmomatic_parser.add_argument('CROP', action='store_true')
-    trimmomatic_parser.add_argument('HEADCROP', action='store_true')
-    trimmomatic_parser.add_argument('fastq', type=str)
-    trimmomatic_parser.add_argument('--threshold', type=int, required=False)
-    trimmomatic_parser.add_argument('--length', type=int, required=False)
-    trimmomatic_parser.add_argument('--window', type=int, required=False)
+    trimmomatic_subparser = trimmomatic_parser.add_subparsers()
+
+    sliding_window_parser = trimmomatic_subparser.add_parser('SLIDINGWINDOW')
+    sliding_window_parser.add_argument('--threshhold', type=int, required=True)
+    sliding_window_parser.add_argument('--window', type=int, required=True)
+
+    leading_parser = trimmomatic_subparser.add_parser('LEADING')
+    leading_parser.add_argument('--threshhold', type=int, required=True)
+
+    trailing_parser = trimmomatic_subparser.add_parser('TRAILING')
+    trailing_parser.add_argument('--threshhold', type=int, required=True)
+
+    crop_parser = trimmomatic_subparser.add_parser('CROP')
+    crop_parser.add_argument('--length', type=int, required=True)
+
+    headcrop_parser = trimmomatic_subparser.add_parser('HEADCROP')
+    headcrop_parser.add_argument('--length', type=int, required=True)
 
     args = parser.parse_args()
 
