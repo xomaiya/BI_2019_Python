@@ -56,29 +56,26 @@ def headcrop(read, length):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers()
-
-    parser.add_argument('fastq', type=str)
+    subparsers = parser.add_subparsers(dest='mode')
 
     filter_parser = subparsers.add_parser('filter')
     filter_parser.add_argument('--min_length', type=int, required=True)
     filter_parser.add_argument('--keep_filtered', action="store_true")
     filter_parser.add_argument('--gc_bounds', type=int, nargs='+', required=True)
     filter_parser.add_argument('--output_base_name', type=str, required=False)
-    filter_parser.add_argument('fastq', type=str)
 
     trimmomatic_parser = subparsers.add_parser('trimmomatic')
-    trimmomatic_subparser = trimmomatic_parser.add_subparsers()
+    trimmomatic_subparser = trimmomatic_parser.add_subparsers(dest='method')
 
     sliding_window_parser = trimmomatic_subparser.add_parser('SLIDINGWINDOW')
-    sliding_window_parser.add_argument('--threshhold', type=int, required=True)
+    sliding_window_parser.add_argument('--threshold', type=int, required=True)
     sliding_window_parser.add_argument('--window', type=int, required=True)
 
     leading_parser = trimmomatic_subparser.add_parser('LEADING')
-    leading_parser.add_argument('--threshhold', type=int, required=True)
+    leading_parser.add_argument('--threshold', type=int, required=True)
 
     trailing_parser = trimmomatic_subparser.add_parser('TRAILING')
-    trailing_parser.add_argument('--threshhold', type=int, required=True)
+    trailing_parser.add_argument('--threshold', type=int, required=True)
 
     crop_parser = trimmomatic_subparser.add_parser('CROP')
     crop_parser.add_argument('--length', type=int, required=True)
@@ -86,14 +83,16 @@ if __name__ == '__main__':
     headcrop_parser = trimmomatic_subparser.add_parser('HEADCROP')
     headcrop_parser.add_argument('--length', type=int, required=True)
 
+    parser.add_argument('fastq', type=str)
+
     args = parser.parse_args()
 
     with open(args.fastq, 'r') as file:
-        fastq = file.readlines()
+        fastq = [line.strip() for line in file.readlines()]
 
-    if args.trimmonatic:
+    if args.mode == 'trimmomatic':
 
-        if args.SLIDINGWINDOW:
+        if args.method == 'SLIDINGWINDOW':
             with open('output', 'w') as file:
                 for i in range(0, len(fastq), 4):
                     file.write(f'{fastq[i]}\n')
@@ -101,7 +100,7 @@ if __name__ == '__main__':
                     file.write(f'{fastq[i + 2]}\n')
                     file.write(f'{fastq[i + 3]}\n')
 
-        if args.LEADING:
+        if args.method == 'LEADING':
             with open('output', 'w') as file:
                 for i in range(0, len(fastq), 4):
                     file.write(f'{fastq[i]}\n')
@@ -109,7 +108,7 @@ if __name__ == '__main__':
                     file.write(f'{fastq[i + 2]}\n')
                     file.write(f'{fastq[i + 3]}\n')
 
-        if args.TRAILING:
+        if args.method == 'TRAILING':
             with open('output', 'w') as file:
                 for i in range(0, len(fastq), 4):
                     file.write(f'{fastq[i]}\n')
@@ -117,7 +116,7 @@ if __name__ == '__main__':
                     file.write(f'{fastq[i + 2]}\n')
                     file.write(f'{fastq[i + 3]}\n')
 
-        if args.CROP:
+        if args.method == 'CROP':
             with open('output', 'w') as file:
                 for i in range(0, len(fastq), 4):
                     file.write(f'{fastq[i]}\n')
@@ -125,7 +124,7 @@ if __name__ == '__main__':
                     file.write(f'{fastq[i + 2]}\n')
                     file.write(f'{fastq[i + 3]}\n')
 
-        if args.HEADCROP:
+        if args.method == 'HEADCROP':
             with open('output', 'w') as file:
                 for i in range(0, len(fastq), 4):
                     file.write(f'{fastq[i]}\n')
@@ -133,7 +132,7 @@ if __name__ == '__main__':
                     file.write(f'{fastq[i + 2]}\n')
                     file.write(f'{fastq[i + 3]}\n')
 
-    if args.filter:
+    if args.mode == 'filter':
         assert args.min_length > 0, "min_length < 0. Так дела не делаются."
         assert 1 <= len(args.gc_bounds) <= 2, "Неверное количество границ"
 
